@@ -49,6 +49,11 @@ while IFS= read -r line || [[ -n $line ]]; do
   echo "➡️  Syncing to $FQDN…" | tee -a "$LOGFILE"
 
   if rsync -avz \
+	--exclude='.git/' \
+	--exclude='.gitignore' \
+	--exclude='sync-results.log' \
+	--exclude='remote-hosts.txt' \
+	--exclude='username.txt' \
         -e "ssh -i $KEY_FILE -o BatchMode=yes -o ConnectTimeout=5" \
         "$SOURCE_DIR" \
         "$USERNAME@$FQDN:$DEST_DIR" \
