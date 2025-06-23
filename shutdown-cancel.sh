@@ -13,5 +13,5 @@
 
 set -euo pipefail
 
-# —— Shutdown in 1 minute ——  
-sudo shutdown -h +1
+# —— Cancel shutdown ——  
+sudo shutdown -c
