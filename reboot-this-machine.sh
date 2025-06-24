@@ -14,4 +14,4 @@
 set -euo pipefail
 
 # —— Reboot ——  
-sudo shutdown -r +1
+sudo shutdown -r +5
