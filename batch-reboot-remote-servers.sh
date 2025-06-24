@@ -2,7 +2,7 @@
 #
 # Script: batch-reboot-remote-servers.sh
 # Description:
-#   SSH into each hose and run cancel shutdown script.
+#   SSH into each hose and run reboot script.
 #
 # Usage:
 #   ./batch-reboot-remote-servers.sh
@@ -12,7 +12,7 @@
 #   HOSTFILE       Path to the file listing each server base name (one per line)
 #   HOSTDOMAIN     Domain suffix for each host (e.g., ".lan")
 #   KEY_FILE       Path to your SSH private key
-#   REMOTE_CMD     Command to run on the remote server (e.g., sudo ~/scripts/update-the-stuff.sh)
+#   REMOTE_CMD     Command to run on the remote server (e.g., sudo ~/scripts/Reboot-the-stuff.sh)
 #   LOGFILE        Path to the log file for recording timestamped results
 #
 
@@ -47,10 +47,10 @@ while IFS= read -r SERVER; do           # raw read per line
          -t "$USERNAME@$FQDN" < /dev/null \
          "$REMOTE_CMD"
   then
-    echo "$(date +'%F %T')  [OK]   Updated $FQDN" >> "$LOGFILE"
+    echo "$(date +'%F %T')  [OK]   Rebooted $FQDN" >> "$LOGFILE"
     SUCCESS+=("$FQDN")
   else
-    echo "$(date +'%F %T')  [FAIL] Update failed on $FQDN" >> "$LOGFILE"
+    echo "$(date +'%F %T')  [FAIL] Reboot failed on $FQDN" >> "$LOGFILE"
     FAIL+=("$FQDN")
   fi
 
@@ -58,7 +58,7 @@ done < "$HOSTFILE"
 
 # —— Summary ——  
 echo
-echo "📊 Update Summary"
+echo "📊 Reboot Summary"
 echo "================="
 echo "✅ Succeeded (${#SUCCESS[@]}):"
 for h in "${SUCCESS[@]}"; do
