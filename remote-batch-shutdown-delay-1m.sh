@@ -38,7 +38,7 @@ while IFS= read -r SERVER; do           # raw read per line
   [[ -z "$SERVER" ]] && continue        # skip blank lines
   FQDN="${SERVER}${HOSTDOMAIN}"         # build fully-qualified host
 
-  echo "➡️  Updating $FQDN…"  
+  echo "➡️  Shutting down $FQDN…"  
 
   # SSH with TTY allocation (-t) so sudo can prompt if needed; redirect ssh stdin
   if ssh -i "$KEY_FILE" \
@@ -47,10 +47,10 @@ while IFS= read -r SERVER; do           # raw read per line
          -t "$USERNAME@$FQDN" < /dev/null \
          "$REMOTE_CMD"
   then
-    echo "$(date +'%F %T')  [OK]   Updated $FQDN" >> "$LOGFILE"
+    echo "$(date +'%F %T')  [OK]   Shutdown $FQDN" >> "$LOGFILE"
     SUCCESS+=("$FQDN")
   else
-    echo "$(date +'%F %T')  [FAIL] Update failed on $FQDN" >> "$LOGFILE"
+    echo "$(date +'%F %T')  [FAIL] Shutdown failed on $FQDN" >> "$LOGFILE"
     FAIL+=("$FQDN")
   fi
 
