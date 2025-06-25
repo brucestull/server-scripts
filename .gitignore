@@ -6,3 +6,4 @@ update-results.log
 shutdown-cancel-results.log
 shutdown-remote-servers-results.log
 reboot-remote-servers-results.log
+remote-hosts.txt.bak
