@@ -1,5 +1,6 @@
 remote-hosts.txt
 username.txt
+*.log
 sync-results.log
 update-results.log
 shutdown-cancel-results.log
