@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #
-# Script: shutdown-this-machine.sh
+# Script: local-shutdown-now.sh
 # Description:
 #   Immediately shut down the local machine.
 #
 # Usage:
-#   sudo ./shutdown-this-machine.sh
+#   sudo ./local-shutdown-now.sh
 #
 # Configuration:
 #   None

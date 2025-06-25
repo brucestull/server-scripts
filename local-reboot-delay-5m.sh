@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #
-# Script: reboot-this-machine.sh
+# Script: local-reboot-delay-5m.sh
 # Description:
 #   Shutdown and immediately reboot the local machine.
 #
 # Usage:
-#   sudo ./reboot-this-machine.sh
+#   sudo ./local-reboot-delay-5m.sh
 #
 # Configuration:
 #   None

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #
-# Script: update-system-packages.sh
+# Script: local-update-packages.sh
 # Description:
 #   Update APT package lists and upgrade all installed packages on the local system.
 #
 # Usage:
-#   ./update-system-packages.sh
+#   ./local-update-packages.sh
 #
 # Configuration:
 #   None

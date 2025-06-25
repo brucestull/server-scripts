@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #
-# Script: shutdown-this-machine-one-minute.sh
+# Script: local-shutdown-delay-1m.sh
 # Description:
 #   Shut down the local machine in one minute.
 #
 # Usage:
-#   sudo ./shutdown-this-machine-one-minute.sh
+#   sudo ./local-shutdown-delay-1m.sh
 #
 # Configuration:
 #   None

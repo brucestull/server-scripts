@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 #
-# Script: batch-update-remote-servers.sh
+# Script: remote-batch-update.sh
 # Description:
 #   SSH into each host to run a remote update-the-stuff script under sudo,
 #   record successes and failures in a timestamped log, and print a summary.
 #
 # Usage:
-#   ./batch-update-remote-servers.sh
+#   ./remote-batch-update.sh
 #
 # Configuration:
 #   USERNAME_FILE  Path to the file containing your SSH username
@@ -22,7 +22,7 @@ USERNAME_FILE="./username.txt"           # file with your SSH username
 HOSTFILE="./remote-hosts.txt"            # file listing each server base-name  
 HOSTDOMAIN=".lan"                        # domain suffix (e.g. "SERVER.lan")  
 KEY_FILE="${HOME}/.ssh/id_ed25519_remote_runner"  # SSH private key  
-REMOTE_CMD="sudo ~/server-scripts/update-system-packages.sh"   # remote command to run  
+REMOTE_CMD="sudo ~/server-scripts/local-update-packages.sh"   # remote command to run  
 LOGFILE="./update-results.log"           # where to record timestamped OK/FAIL
 
 # —— Prep ——  

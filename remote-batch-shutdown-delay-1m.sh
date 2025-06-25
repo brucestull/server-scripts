@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #
-# Script: batch-shutdown-remote-servers.sh
+# Script: remote-batch-shutdown-delay-1m.sh
 # Description:
 #   SSH into each hose and run cancel shutdown script.
 #
 # Usage:
-#   ./batch-shutdown-remote-servers.sh
+#   ./remote-batch-shutdown-delay-1m.sh
 #
 # Configuration:
 #   USERNAME_FILE  Path to the file containing your SSH username
@@ -21,7 +21,7 @@ USERNAME_FILE="./username.txt"           # file with your SSH username
 HOSTFILE="./remote-hosts.txt"            # file listing each server base-name  
 HOSTDOMAIN=".lan"                        # domain suffix (e.g. "SERVER.lan")  
 KEY_FILE="${HOME}/.ssh/id_ed25519_remote_runner"  # SSH private key  
-REMOTE_CMD="sudo ~/server-scripts/shutdown-this-machine-one-minute.sh"   # remote command to run  
+REMOTE_CMD="sudo ~/server-scripts/local-shutdown-delay-1m.sh"   # remote command to run  
 LOGFILE="./shutdown-remote-servers-results.log"           # where to record timestamped OK/FAIL
 
 # —— Prep ——  

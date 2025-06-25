@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #
-# Script: batch-reboot-remote-servers.sh
+# Script: remote-batch-reboot.sh
 # Description:
 #   SSH into each hose and run reboot script.
 #
 # Usage:
-#   ./batch-reboot-remote-servers.sh
+#   ./remote-batch-reboot.sh
 #
 # Configuration:
 #   USERNAME_FILE  Path to the file containing your SSH username
@@ -21,7 +21,7 @@ USERNAME_FILE="./username.txt"           # file with your SSH username
 HOSTFILE="./remote-hosts.txt"            # file listing each server base-name  
 HOSTDOMAIN=".lan"                        # domain suffix (e.g. "SERVER.lan")  
 KEY_FILE="${HOME}/.ssh/id_ed25519_remote_runner"  # SSH private key  
-REMOTE_CMD="sudo ~/server-scripts/reboot-this-machine.sh"   # remote command to run  
+REMOTE_CMD="sudo ~/server-scripts/local-reboot-delay-5m.sh"   # remote command to run  
 LOGFILE="./reboot-remote-servers-results.log"           # where to record timestamped OK/FAIL
 
 # —— Prep ——  

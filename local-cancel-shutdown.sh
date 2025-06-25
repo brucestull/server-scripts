@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #
-# Script: shutdown-cancel.sh
+# Script: local-cancel-shutdown.sh
 # Description:
 #   Cancel previous shutdown order of this local machine.
 #
 # Usage:
-#   sudo ./shutdown-cancel.sh
+#   sudo ./local-cancel-shutdown.sh
 #
 # Configuration:
 #   None
