@@ -1,4 +1,3 @@
-````md
 # 🌐 Script: remote-batch-update.sh
 
 ## 🧠 What it Does
@@ -12,7 +11,7 @@ SSH into each host listed in `remote-hosts.txt`, run `local-update-packages.sh` 
 
 ```bash
 USERNAME_FILE="./username.txt"
-````
+```
 
 * Path to file containing your SSH username (one line, no extra whitespace).
 * Script will abort if this file is missing.
