@@ -18,32 +18,32 @@
 
 set -euo pipefail
 
-# —— Configuration ——  
-USERNAME_FILE="./username.txt"                         # file with your SSH username  
-HOSTFILE="./remote-hosts.txt"                          # file listing each server base-name  
-HOSTDOMAIN=".lan"                                      # domain suffix (e.g. "SERVER.lan")  
-KEY_FILE="${HOME}/.ssh/id_ed25519_remote_runner"       # SSH private key  
+# —— Configuration ——
+USERNAME_FILE="./username.txt"                         # file with your SSH username
+HOSTFILE="./remote-hosts.txt"                          # file listing each server base-name
+HOSTDOMAIN=".lan"                                      # domain suffix (e.g. "SERVER.lan")
+KEY_FILE="${HOME}/.ssh/id_ed25519_remote_runner"       # SSH private key
 REMOTE_CMD="~/server-scripts/local-update-packages.sh" # remote script path (no sudo)
 LOGFILE="./update-results.log"                         # where to record timestamped OK/FAIL
 
-# —— Prep ——  
+# —— Prep ——
 [[ -f "$USERNAME_FILE" ]] || { echo "❌ Missing $USERNAME_FILE"; exit 1; }
-read -r USERNAME < "$USERNAME_FILE"                   # load SSH user  
-> "$LOGFILE"                                          # clear/create log
+read -r USERNAME < "$USERNAME_FILE"                   # load SSH user
+touch "$LOGFILE" && > "$LOGFILE"                   # clear/create log
 
-# —— Result arrays ——  
+# —— Result arrays ——
 SUCCESS=()
 FAIL=()
 
-# —— Loop through hosts ——  
+# —— Loop through hosts ——
 while IFS= read -r SERVER; do                           # raw read per line
   [[ -z "$SERVER" ]] && continue                      # skip blank lines
   FQDN="${SERVER}${HOSTDOMAIN}"                       # build fully-qualified host
 
   echo "➡️  Updating $FQDN…"
 
-  # SSH into host, set noninteractive env, preserve it for sudo, then run update script
-  if ssh -i "$KEY_FILE" \
+  # SSH with no stdin (-n) so the loop's input isn't consumed
+  if ssh -n -i "$KEY_FILE" \
          -o BatchMode=yes \
          -o ConnectTimeout=5 \
          "$USERNAME@$FQDN" bash -lc \
@@ -59,7 +59,7 @@ while IFS= read -r SERVER; do                           # raw read per line
 
 done < "$HOSTFILE"
 
-# —— Summary ——  
+# —— Summary ——
 echo
 echo "📊 Update Summary"
 echo "================="
