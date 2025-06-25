@@ -45,6 +45,9 @@ while IFS= read -r SERVER; do
 
   echo "➡️  Updating $FQDN…"
 
+  # Add separator header to detailed log
+  echo -e "\n===== $FQDN =====\n" | tee -a "$DETAIL_LOGFILE"
+
   # Run SSH, capture all output to detailed log
   if ssh -n -i "$KEY_FILE" \
          -o BatchMode=yes \
@@ -60,7 +63,7 @@ while IFS= read -r SERVER; do
     FAIL+=("$FQDN")
   fi
 
-done < "$HOSTFILE"
+ done < "$HOSTFILE"
 
 # —— Summary to console ——
 echo
