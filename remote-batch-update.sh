@@ -43,9 +43,14 @@ DETAIL_LOGFILE="$LOG_DIR/update-detail.log"
 }
 read -r USERNAME < "$USERNAME_FILE"
 
+# Create log files if missing (but don’t clear them)
+mkdir -p "$LOG_DIR"
+touch "$SUMMARY_LOGFILE" "$DETAIL_LOGFILE"
+
+
 # Truncate (or create) fresh logs
-: > "$SUMMARY_LOGFILE"
-: > "$DETAIL_LOGFILE"
+#: > "$SUMMARY_LOGFILE"
+#: > "$DETAIL_LOGFILE"
 
 # —— Result arrays ——  
 SUCCESS=()  # hosts that updated successfully
