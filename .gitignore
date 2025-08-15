@@ -1,9 +1,16 @@
 remote-hosts.txt
+remote-hosts-all.txt
+remote-hosts.txt.bak
 username.txt
+
 *.log
 sync-results.log
 update-results.log
 shutdown-cancel-results.log
 shutdown-remote-servers-results.log
 reboot-remote-servers-results.log
-remote-hosts.txt.bak
+
+TEMP.md
+
+server_lookup.md
+server-informations.json
