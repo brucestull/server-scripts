@@ -20,8 +20,13 @@ mkdir -p "$LOG_DIR"
 # —— Configuration ——
 USERNAME_FILE="$SCRIPT_DIR/username.txt"
 HOSTFILE="$SCRIPT_DIR/remote-hosts.txt"
-HOSTDOMAIN=".lan"
-KEY_FILE="${HOME}/.ssh/id_ed25519_remote_runner"
+
+# If you want to automatically append a domain to *bare* hostnames, set HOSTDOMAIN.
+# Leave empty ("") to use bare names as-is (recommended if name resolution is unreliable).
+HOSTDOMAIN=""
+
+# SSH key to use
+KEY_FILE="${HOME}/.ssh/id_ed25519_server_fleet"
 
 # Try Linux (/proc/meminfo), or macOS/BSD (sysctl) — print both human + machine-readable lines.
 REMOTE_CMD='
