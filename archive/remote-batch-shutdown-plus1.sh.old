@@ -1,0 +1,150 @@
+#!/usr/bin/env bash
+#
+# Script: remote-batch-shutdown-plus1.sh
+# Description:
+#   SSH into each host and schedule a poweroff in 1 minute.
+#   Logs successes/failures in a summary log; full output in a detail log.
+#
+# Files (expected in same dir as this script):
+#   - remote-hosts.txt
+#   - .secrets.env   (or your chosen secrets filename)
+#
+# Usage:
+#   ./remote-batch-shutdown-plus1.sh
+#   ./remote-batch-shutdown-plus1.sh --dry-run
+#
+
+set -euo pipefail
+
+# —— Directories ——
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+LOG_DIR="$SCRIPT_DIR/../logs"
+mkdir -p "$LOG_DIR"
+
+# —— Configuration ——
+HOSTFILE="$SCRIPT_DIR/remote-hosts.txt"
+
+# Rename this to whatever you pick:
+SECRETS_FILE="$SCRIPT_DIR/.secrets.env"
+
+# Optional: append a domain to bare hostnames, like ".local"
+HOSTDOMAIN=""
+
+SUMMARY_LOGFILE="$LOG_DIR/shutdown-summary.log"
+DETAIL_LOGFILE="$LOG_DIR/shutdown-detail.log"
+
+DRY_RUN="false"
+if [[ "${1:-}" == "--dry-run" ]]; then
+  DRY_RUN="true"
+fi
+
+# —— Load secrets ——
+[[ -f "$SECRETS_FILE" ]] || { echo "❌ Missing secrets file: $SECRETS_FILE"; exit 1; }
+
+# shellcheck disable=SC1090
+set -a
+source "$SECRETS_FILE"
+set +a
+
+: "${USER_NAME:?❌ USER_NAME is required in secrets file}"
+: "${SSH_PUBLIC_KEY_PATH:?❌ SSH_PUBLIC_KEY_PATH is required in secrets file}"
+
+# PASSWORD is optional (best practice is passwordless sudo for shutdown)
+PASSWORD="${PASSWORD:-}"
+
+KEY_FILE="$SSH_PUBLIC_KEY_PATH"
+
+# —— Prep logs ——
+touch "$SUMMARY_LOGFILE" "$DETAIL_LOGFILE"
+
+# —— Result arrays ——
+SUCCESS=()
+FAIL=()
+
+# —— Remote commands ——
+# Prefer passwordless sudo first (sudo -n). If that fails and PASSWORD is set, fallback to sudo -S.
+REMOTE_CMD_NO_PASS='sudo -n shutdown -h +1 "Remote maintenance shutdown (1 minute)"'
+REMOTE_CMD_WITH_PASS='echo "__SUDO_PASS__" | sudo -S shutdown -h +1 "Remote maintenance shutdown (1 minute)"'
+
+# —— Loop through hosts ——
+[[ -f "$HOSTFILE" ]] || { echo "❌ Missing host file: $HOSTFILE"; exit 1; }
+
+while IFS= read -r SERVER; do
+  [[ -z "$SERVER" ]] && continue
+  [[ "$SERVER" =~ ^# ]] && continue
+
+  FQDN="${SERVER}${HOSTDOMAIN}"
+
+  echo "➡️  Scheduling shutdown (+1 min) on $FQDN…"
+  printf "\n===== %s - %s =====\n\n" "$FQDN" "$(date '+%Y-%m-%d %H:%M:%S')" \
+    | tee -a "$DETAIL_LOGFILE"
+
+  if [[ "$DRY_RUN" == "true" ]]; then
+    echo "DRY RUN: would run on $FQDN: $REMOTE_CMD_NO_PASS" | tee -a "$DETAIL_LOGFILE"
+    echo "$(date +'%F %T')  [DRY]  Shutdown would be scheduled on $FQDN" | tee -a "$SUMMARY_LOGFILE"
+    SUCCESS+=("$FQDN")
+    continue
+  fi
+
+  TMP_OUT="$(mktemp)"
+
+  # 1) Try passwordless sudo shutdown
+  if ssh -n -i "$KEY_FILE" \
+         -o BatchMode=yes \
+         -o ConnectTimeout=5 \
+         "$USER_NAME@$FQDN" "$REMOTE_CMD_NO_PASS" \
+         2>&1 | tee -a "$DETAIL_LOGFILE" | tee "$TMP_OUT" >/dev/null; then
+
+    echo "$(date +'%F %T')  [OK]   Shutdown scheduled on $FQDN (+1 min)" \
+      | tee -a "$SUMMARY_LOGFILE"
+    SUCCESS+=("$FQDN")
+
+  else
+    # 2) If password provided, attempt sudo -S fallback
+    if [[ -n "$PASSWORD" ]]; then
+      # Use -tt so sudo can prompt / allocate TTY if it insists; we’re feeding via stdin anyway.
+      SAFE_CMD="${REMOTE_CMD_WITH_PASS/__SUDO_PASS__/$PASSWORD}"
+
+      if ssh -tt -i "$KEY_FILE" \
+            -o BatchMode=yes \
+            -o ConnectTimeout=5 \
+            "$USER_NAME@$FQDN" "$SAFE_CMD" \
+            2>&1 | tee -a "$DETAIL_LOGFILE" >/dev/null; then
+
+        echo "$(date +'%F %T')  [OK]   Shutdown scheduled on $FQDN (+1 min) (sudo -S fallback)" \
+          | tee -a "$SUMMARY_LOGFILE"
+        SUCCESS+=("$FQDN")
+      else
+        echo "$(date +'%F %T')  [FAIL] Shutdown scheduling failed on $FQDN (sudo -S fallback)" \
+          | tee -a "$SUMMARY_LOGFILE"
+        FAIL+=("$FQDN")
+      fi
+    else
+      echo "$(date +'%F %T')  [FAIL] Shutdown scheduling failed on $FQDN (sudo likely requires a password; PASSWORD not set)" \
+        | tee -a "$SUMMARY_LOGFILE"
+      FAIL+=("$FQDN")
+    fi
+  fi
+
+  rm -f "$TMP_OUT"
+
+done < "$HOSTFILE"
+
+# —— Summary to console ——
+echo
+echo "📊 Remote Shutdown (+1 minute) Summary"
+echo "====================================="
+echo "✅ Succeeded (${#SUCCESS[@]}):"
+for host in "${SUCCESS[@]}"; do
+  echo "  - $host"
+done
+
+echo
+echo "❌ Failed   (${#FAIL[@]}):"
+for host in "${FAIL[@]}"; do
+  echo "  - $host"
+done
+
+echo
+echo "📝 Logs: summary in $SUMMARY_LOGFILE, full output in $DETAIL_LOGFILE"
+echo "ℹ️  Cancel on a host (before it powers off): sudo shutdown -c"
