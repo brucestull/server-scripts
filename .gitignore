@@ -3,6 +3,11 @@ remote-hosts-all.txt
 remote-hosts.txt.bak
 username.txt
 
+local-things
+
+.secrets
+.env
+
 *.log
 sync-results.log
 update-results.log
