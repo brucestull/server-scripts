@@ -6,6 +6,10 @@ username.txt
 local-things
 
 .secrets
+**/.secrets
+!.secrets.example
+!**/.secrets.example
+
 .env
 
 *.log
